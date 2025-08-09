@@ -4,15 +4,13 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Dashboard Fotovoltaico - Kiosk</title>
-    <!-- Tailwind CSS for styling -->
+    <link rel="icon" id="favicon-link" href="" />
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Chart.js for charts -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- Custom font from Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&amp;display=swap"
       rel="stylesheet"
     />
     <style>
@@ -31,7 +29,8 @@
         background-color: #111827; /* gray-900 */
         color: #d1d5db; /* gray-300 */
       }
-      .dark .card {
+      .dark .card,
+      .dark .settings-panel {
         background-color: #1f2937; /* gray-800 */
         border-color: #374151; /* gray-700 */
       }
@@ -44,13 +43,19 @@
       .dark #status-overlay .bg-overlay {
         background-color: #111827;
       }
+      .dark input,
+      .dark select {
+        background-color: #374151;
+        border-color: #4b5563;
+      }
 
       /* Light theme */
       body.light {
         background-color: #f3f4f6; /* gray-100 */
         color: #374151; /* gray-700 */
       }
-      .light .card {
+      .light .card,
+      .light .settings-panel {
         background-color: #ffffff;
         border-color: #e5e7eb; /* gray-200 */
         box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1),
@@ -68,40 +73,162 @@
       .light #status-overlay .text-overlay {
         color: #111827;
       }
-
-      /* Status overlay styles */
-      #status-overlay {
-        transition: opacity 0.5s;
+      .light input,
+      .light select {
+        background-color: #f9fafb;
+        border-color: #d1d5db;
       }
 
-      /* New classes for text scaling */
-      /* Sets the base font size for the entire page */
-      body.text-size-normal {
+      /* Status overlay styles */
+      #status-overlay,
+      #settings-modal {
+        transition: opacity 0.3s;
+      }
+
+      /* Text scaling classes */
+      /* Sets the root font size, scaling all rem-based utilities */
+      html.text-size-normal {
         font-size: 16px;
       } /* Standard size */
-      body.text-size-large {
+      html.text-size-large {
         font-size: 18px;
       } /* 12.5% larger text */
-      body.text-size-xlarge {
+      html.text-size-xlarge {
         font-size: 22px;
       } /* 37.5% larger text */
     </style>
   </head>
   <body>
-    <!-- Overlay for Loading and Error states -->
+    <button
+      id="settings-button"
+      class="fixed top-4 right-4 z-40 p-2 rounded-full hover:bg-gray-500/20 transition"
+    >
+      <svg
+        class="h-6 w-6 sub-title"
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewbox="0 0 24 24"
+        stroke-width="1.5"
+        stroke="currentcolor"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.438.995s.145.755.438.995l1.003.827c.48.398.668 1.03.26 1.431l-1.296 2.247a1.125 1.125 0 01-1.37.49l-1.217-.456c-.355-.133-.75-.072-1.075.124a6.57 6.57 0 01-.22.127c-.332.183-.582.495-.645.87l-.213 1.281c-.09.542-.56.94-1.11-.94h-2.593c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.063-.374-.313-.686-.645-.87a6.52 6.52 0 01-.22-.127c-.324-.196-.72-.257-1.075-.124l-1.217.456a1.125 1.125 0 01-1.37-.49l-1.296-2.247a1.125 1.125 0 01.26-1.431l1.003-.827c.293-.24.438-.613.438.995s-.145-.755-.438-.995l-1.003-.827a1.125 1.125 0 01-.26-1.431l1.296-2.247a1.125 1.125 0 011.37-.49l1.217.456c.355.133.75.072 1.075-.124.073-.044.146-.087.22-.127.332-.183.582-.495.645-.87l.213-1.281z"
+        ></path>
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+        ></path>
+      </svg>
+    </button>
+    <div
+      id="settings-modal"
+      class="fixed inset-0 z-50 flex items-center justify-center hidden opacity-0"
+      style="backdrop-filter: blur(4px); background-color: rgba(0, 0, 0, 0.5)"
+    >
+      <div class="settings-panel rounded-xl p-6 w-full max-w-lg mx-4 border">
+        <h2
+          id="label-settings-title"
+          class="text-2xl font-bold main-title mb-6"
+        ></h2>
+        <form id="settings-form" class="space-y-4" name="settings-form">
+          <div>
+            <label for="apiUrl" class="block text-sm font-medium sub-title"
+              >API URL</label
+            >
+            <input
+              type="text"
+              id="apiUrl"
+              class="mt-1 block w-full rounded-md p-2 border text-sm"
+              required=""
+            />
+          </div>
+          <div>
+            <label
+              for="refreshIntervalMinutes"
+              id="label-refresh-interval"
+              class="block text-sm font-medium sub-title"
+            ></label>
+            <input
+              type="number"
+              id="refreshIntervalMinutes"
+              class="mt-1 block w-full rounded-md p-2 border text-sm"
+              min="1"
+              required=""
+            />
+          </div>
+          <div>
+            <label
+              for="theme"
+              id="label-theme"
+              class="block text-sm font-medium sub-title"
+            ></label>
+            <select
+              id="theme"
+              class="mt-1 block w-full rounded-md p-2 border text-sm"
+            >
+              <option value="dark">Dark</option>
+              <option value="light">Light</option>
+            </select>
+          </div>
+          <div>
+            <label
+              for="textSize"
+              id="label-text-size"
+              class="block text-sm font-medium sub-title"
+            ></label>
+            <select
+              id="textSize"
+              class="mt-1 block w-full rounded-md p-2 border text-sm"
+            >
+              <option value="normal">Normal</option>
+              <option value="large">Large</option>
+              <option value="xlarge">X-Large</option>
+            </select>
+          </div>
+          <div>
+            <label
+              for="language"
+              id="label-language"
+              class="block text-sm font-medium sub-title"
+            ></label>
+            <select
+              id="language"
+              class="mt-1 block w-full rounded-md p-2 border text-sm"
+            >
+              <option value="en">English</option>
+              <option value="it">Italiano</option>
+            </select>
+          </div>
+          <div class="flex justify-end space-x-4 pt-4">
+            <button
+              type="button"
+              id="close-settings-button"
+              class="px-4 py-2 rounded-md sub-title hover:bg-gray-500/20 transition"
+            ></button>
+            <button
+              type="submit"
+              id="save-settings-button"
+              class="px-4 py-2 rounded-md bg-green-600 text-white hover:bg-green-700 transition font-semibold"
+            ></button>
+          </div>
+        </form>
+      </div>
+    </div>
     <div
       id="status-overlay"
-      class="fixed inset-0 z-50 flex items-center justify-center"
+      class="fixed inset-0 z-40 flex items-center justify-center"
     >
       <div class="bg-overlay absolute inset-0 opacity-95"></div>
       <div class="relative text-center text-overlay p-8">
-        <!-- Loading Indicator -->
         <div id="loading-indicator">
           <svg
             class="animate-spin h-10 w-10 text-green-500 mx-auto"
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
-            viewBox="0 0 24 24"
+            viewbox="0 0 24 24"
           >
             <circle
               class="opacity-25"
@@ -119,38 +246,59 @@
           </svg>
           <p id="label-loading" class="mt-4 text-lg font-medium"></p>
         </div>
-        <!-- Error Message (hidden by default) -->
-        <div id="error-message" class="hidden">
+        <div id="message-container" class="hidden">
           <svg
-            class="h-12 w-12 text-red-500 mx-auto"
+            id="welcome-icon"
+            class="h-12 w-12 sub-title mx-auto hidden"
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
-            viewBox="0 0 24 24"
+            viewbox="0 0 24 24"
             stroke-width="1.5"
-            stroke="currentColor"
+            stroke="currentcolor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M10.343 3.94c.09-.542.56-.94 1.11-.94h1.093c.55 0 1.02.398 1.11.94l.149.894c.07.424.384.764.78.93.398.164.855.142 1.205-.055l.737-.424a1.125 1.125 0 011.45.12l.773 1.339a1.125 1.125 0 01-.217 1.45l-.636.492c-.362.28-.594.698-.594 1.148s.232.868.594 1.148l.636.492a1.125 1.125 0 01.217 1.45l-.773 1.339a1.125 1.125 0 01-1.45.12l-.737-.424c-.35-.2-.807-.22-1.205-.055a.99.99 0 00-.78.93l-.149.894c-.09.542-.56.94-1.11.94h-1.093c-.55 0-1.02-.398-1.11-.94l-.149-.894a.99.99 0 00-.78-.93c-.398-.164-.855-.142-1.205.055l-.737.424a1.125 1.125 0 01-1.45-.12l-.773-1.339a1.125 1.125 0 01.217-1.45l.636-.492c.362-.28.594-.698.594-1.148s-.232-.868-.594-1.148l-.636-.492a1.125 1.125 0 01-.217-1.45l.773-1.339a1.125 1.125 0 011.45-.12l.737.424c.35.2.807.22 1.205.055.396-.166.71-.506.78-.93l.149-.894z"
+            ></path>
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+            ></path>
+          </svg>
+          <svg
+            id="error-icon"
+            class="h-12 w-12 text-red-500 mx-auto hidden"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewbox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentcolor"
           >
             <path
               stroke-linecap="round"
               stroke-linejoin="round"
               d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"
-            />
+            ></path>
           </svg>
-          <h2
-            id="label-error-title"
-            class="mt-4 text-2xl font-bold text-red-500"
-          ></h2>
-          <p id="label-error-message" class="mt-2"></p>
-          <p id="label-error-retry" class="mt-1 text-sm sub-title"></p>
+          <h2 id="message-title" class="mt-4 text-2xl font-bold"></h2>
+          <p id="message-body" class="mt-2"></p>
+          <p id="message-retry" class="mt-1 text-sm sub-title"></p>
+          <div id="api-key-cta" class="hidden mt-6">
+            <button
+              id="cta-open-settings"
+              class="px-4 py-2 rounded-md bg-green-600 text-white hover:bg-green-700 transition font-semibold"
+            ></button>
+          </div>
         </div>
       </div>
     </div>
-
     <div
       id="dashboard-content"
       class="container mx-auto p-4 sm:p-6 lg:p-8 opacity-0"
       style="transition: opacity 0.5s"
     >
-      <!-- Header -->
       <header
         class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6"
       >
@@ -164,34 +312,31 @@
         <div class="text-right mt-4 sm:mt-0">
           <p id="label-last-update" class="text-sm sub-title"></p>
           <p id="lastUpdated" class="text-lg font-semibold main-title"></p>
-          <!-- Subtle error message container -->
           <p
             id="subtle-error-message"
             class="text-xs text-red-500 font-semibold mt-1 hidden"
           ></p>
         </div>
       </header>
-
-      <!-- KPI Grid -->
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
         <div class="card rounded-xl p-6 flex items-center space-x-4">
           <div class="bg-green-500/20 p-3 rounded-full">
             <svg
               class="h-8 w-8 text-green-500"
               fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
+              viewbox="0 0 24 24"
+              stroke="currentcolor"
               stroke-width="2"
             >
               <path
                 stroke-linecap="round"
                 stroke-linejoin="round"
                 d="M13 10V3L4 14h7v7l9-11h-7z"
-              />
+              ></path>
             </svg>
           </div>
           <div>
-            <p id="label-realtime-power" class="text-sm sub-title"></p>
+            <p id="label-real-time-power" class="text-sm sub-title"></p>
             <p id="realTimePower" class="text-2xl font-bold main-title"></p>
           </div>
         </div>
@@ -200,15 +345,15 @@
             <svg
               class="h-8 w-8 text-yellow-500"
               fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
+              viewbox="0 0 24 24"
+              stroke="currentcolor"
               stroke-width="2"
             >
               <path
                 stroke-linecap="round"
                 stroke-linejoin="round"
                 d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
-              />
+              ></path>
             </svg>
           </div>
           <div>
@@ -221,15 +366,15 @@
             <svg
               class="h-8 w-8 text-blue-500"
               fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
+              viewbox="0 0 24 24"
+              stroke="currentcolor"
               stroke-width="2"
             >
               <path
                 stroke-linecap="round"
                 stroke-linejoin="round"
                 d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-              />
+              ></path>
             </svg>
           </div>
           <div>
@@ -242,15 +387,15 @@
             <svg
               class="h-8 w-8 text-purple-500"
               fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
+              viewbox="0 0 24 24"
+              stroke="currentcolor"
               stroke-width="2"
             >
               <path
                 stroke-linecap="round"
                 stroke-linejoin="round"
                 d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2h10a2 2 0 002-2v-1a2 2 0 012-2h1.945M7.737 16.525l-.425.85A2 2 0 015.012 18H5a2 2 0 01-2-2V8a2 2 0 012-2h.012a2 2 0 011.723 1.375l.425.85m10.84 6.3a2 2 0 00-1.723-1.375h-.012a2 2 0 00-2 2v8a2 2 0 002 2h.012a2 2 0 001.723-1.375l.425-.85M12 12h.01"
-              />
+              ></path>
             </svg>
           </div>
           <div>
@@ -259,15 +404,15 @@
           </div>
         </div>
       </div>
-
-      <!-- Chart and Environmental Contribution Grid -->
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div class="card lg:col-span-2 rounded-xl p-6">
           <h2
             id="label-power-curve"
             class="text-lg font-semibold main-title mb-4"
           ></h2>
-          <div class="h-80"><canvas id="powerCurveChart"></canvas></div>
+          <div class="h-80">
+            <canvas id="powerCurveChart"></canvas>
+          </div>
         </div>
         <div class="card rounded-xl p-6 flex flex-col">
           <h2
@@ -276,11 +421,32 @@
           ></h2>
           <div class="space-y-5 flex-grow flex flex-col justify-around">
             <div class="flex items-center">
+              <div class="bg-orange-500/20 p-3 rounded-full mr-4">
+                <svg
+                  class="h-7 w-7 text-orange-500"
+                  fill="none"
+                  viewbox="0 0 24 24"
+                  stroke-width="1.5"
+                  stroke="currentcolor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M3.375 19.5h17.25m-17.25 0a1.125 1.125 0 01-1.125-1.125v-1.5c0-.621.504-1.125 1.125-1.125h17.25c.621 0 1.125.504 1.125 1.125v1.5c0 .621-.504 1.125-1.125 1.125m-17.25 0h17.25m-17.25 0h17.25M3.375 12h17.25m-17.25 0a1.125 1.125 0 01-1.125-1.125V9.375c0-.621.504-1.125 1.125-1.125h17.25c.621 0 1.125.504 1.125 1.125V10.5c0 .621-.504 1.125-1.125 1.125m-17.25 0h17.25M3.375 4.5h17.25m-17.25 0a1.125 1.125 0 01-1.125-1.125V1.875c0-.621.504-1.125 1.125-1.125h17.25c.621 0 1.125.504 1.125 1.125V3.375c0 .621-.504 1.125-1.125 1.125m-17.25 0h17.25"
+                  ></path>
+                </svg>
+              </div>
+              <div>
+                <p id="totalYield" class="text-xl font-bold main-title"></p>
+                <p id="label-total-yield" class="text-sm sub-title"></p>
+              </div>
+            </div>
+            <div class="flex items-center">
               <div class="bg-teal-500/20 p-3 rounded-full mr-4">
                 <svg
                   class="h-7 w-7 text-teal-400"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
+                  viewbox="0 0 20 20"
+                  fill="currentcolor"
                 >
                   <path
                     fill-rule="evenodd"
@@ -298,8 +464,8 @@
               <div class="bg-emerald-500/20 p-3 rounded-full mr-4">
                 <svg
                   class="h-7 w-7 text-emerald-400"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
+                  viewbox="0 0 20 20"
+                  fill="currentcolor"
                 >
                   <path
                     d="M17.388 1.252A1 1 0 0016.22.81l-6.53 3.003-2.894-1.89a1 1 0 00-1.174.092l-4 3.5a1 1 0 00.01 1.68l4 2.5a1 1 0 001.175-.092l2.893-1.89L16.22 11.19a1 1 0 001.168-.44l2-4a1 1 0 00-.52-1.332l-5-2.5a1 1 0 00-.48-.066z"
@@ -320,8 +486,8 @@
               <div class="bg-gray-500/20 p-3 rounded-full mr-4">
                 <svg
                   class="h-7 w-7 text-gray-400"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
+                  viewbox="0 0 20 20"
+                  fill="currentcolor"
                 >
                   <path
                     d="M5 3a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2V5a2 2 0 00-2-2H5zm0 2h10v10H5V5z"
@@ -339,270 +505,430 @@
           </div>
         </div>
       </div>
-    </div>
+      <script>
+        // --- DEFAULT CONFIGURATION ---
+        const defaultConfig = {
+          apiUrl: "",
+          refreshIntervalMinutes: 5,
+          theme: "light",
+          textSize: "normal",
+          language: "en",
+        };
+        let config = {}; // Will be populated on load
 
-    <script>
-      // --- DASHBOARD CONFIGURATION ---
-      const config = {
-        apiUrl:
-          "https://corsproxy.io/?url=https://uni003eu5.fusionsolar.huawei.com/rest/pvms/web/kiosk/v1/station-kiosk-file?kk=xxxxxxx",
-        refreshIntervalMinutes: 5,
-        theme: "dark",
-        // Text size option: 'normal', 'large', 'xlarge'
-        textSize: "normal",
-        // Language option: 'en' (English) or 'it' (Italian)
-        language: "en",
-      };
-      // --- END OF CONFIGURATION ---
-
-      // --- TRANSLATIONS ---
-      const translations = {
-        loading: { en: "Loading data...", it: "Caricamento dati in corso..." },
-        errorTitle: { en: "Connection Error", it: "Errore di Connessione" },
-        errorMessage: {
-          en: "Could not retrieve data from the plant.",
-          it: "Impossibile recuperare i dati dall'impianto.",
-        },
-        errorRetry: {
-          en: "A new attempt will be made shortly.",
-          it: "Verrà eseguito un nuovo tentativo a breve.",
-        },
-        connectionLost: {
-          en: "Connection lost. Retrying...",
-          it: "Connessione persa. Riprovo...",
-        },
-        lastUpdate: { en: "Last Update", it: "Ultimo Aggiornamento" },
-        realTimePower: { en: "Real-time Power", it: "Potenza Istantanea" },
-        dailyEnergy: { en: "Daily Production", it: "Produzione Giornaliera" },
-        monthlyEnergy: { en: "Monthly Production", it: "Produzione Mensile" },
-        yearlyEnergy: { en: "Yearly Production", it: "Produzione Annuale" },
-        powerCurve: {
-          en: "Daily Power Curve",
-          it: "Curva di Potenza Giornaliera",
-        },
-        envContribution: {
-          en: "Environmental Contribution",
-          it: "Contributo Ambientale",
-        },
-        co2Reduction: { en: "CO₂ Reduction", it: "Riduzione CO₂" },
-        equivalentTrees: { en: "Equivalent Trees", it: "Alberi Equivalenti" },
-        coalSavings: { en: "Coal Savings", it: "Risparmio Carbone" },
-        activePower: { en: "Active Power (kW)", it: "Potenza Attiva (kW)" },
-      };
-      // --- END OF TRANSLATIONS ---
-
-      const statusOverlay = document.getElementById("status-overlay");
-      const loadingIndicator = document.getElementById("loading-indicator");
-      const errorMessage = document.getElementById("error-message");
-      const dashboardContent = document.getElementById("dashboard-content");
-      const subtleErrorEl = document.getElementById("subtle-error-message");
-      let powerCurveChart = null;
-      let hasLoadedOnce = false;
-
-      // Function to get the translated string
-      const t = (key) =>
-        translations[key]?.[config.language] ||
-        translations[key]?.["en"] ||
-        key;
-
-      // Function to set all static text elements on the page
-      const applyStaticTranslations = () => {
-        document.getElementById("label-loading").textContent = t("loading");
-        document.getElementById("label-error-title").textContent =
-          t("errorTitle");
-        document.getElementById("label-error-message").textContent =
-          t("errorMessage");
-        document.getElementById("label-error-retry").textContent =
-          t("errorRetry");
-        document.getElementById("label-last-update").textContent =
-          t("lastUpdate");
-        document.getElementById("label-realtime-power").textContent =
-          t("realTimePower");
-        document.getElementById("label-daily-energy").textContent =
-          t("dailyEnergy");
-        document.getElementById("label-monthly-energy").textContent =
-          t("monthlyEnergy");
-        document.getElementById("label-yearly-energy").textContent =
-          t("yearlyEnergy");
-        document.getElementById("label-power-curve").textContent =
-          t("powerCurve");
-        document.getElementById("label-env-contribution").textContent =
-          t("envContribution");
-        document.getElementById("label-co2-reduction").textContent =
-          t("co2Reduction");
-        document.getElementById("label-equivalent-trees").textContent =
-          t("equivalentTrees");
-        document.getElementById("label-coal-savings").textContent =
-          t("coalSavings");
-      };
-
-      // Apply theme and text size on startup
-      document.body.classList.add(config.theme);
-      document.body.classList.add(`text-size-${config.textSize}`);
-
-      // Helper function to update a DOM element's text content
-      const updateElement = (id, value, unit = "") => {
-        const element = document.getElementById(id);
-        if (element) element.textContent = `${value}${unit}`;
-      };
-
-      // Helper function to decode HTML entities from a string
-      const decodeHtmlEntities = (text) => {
-        // A temporary element is used to let the browser do the decoding
-        const textarea = document.createElement("textarea");
-        textarea.innerHTML = text;
-        return textarea.value;
-      };
-
-      // Main function to update the dashboard UI with data
-      const updateDashboardUI = (apiResponse) => {
-        const decodedDataString = decodeHtmlEntities(apiResponse.data);
-        const parsedData = JSON.parse(decodedDataString);
-        const { realKpi, stationOverview, socialContribution, powerCurve } =
-          parsedData;
-
-        updateElement("stationName", stationOverview.stationName);
-        updateElement(
-          "stationAddress",
-          stationOverview.plantAddress.replace(/([A-Z][a-z])/g, " $1").trim()
-        );
-        updateElement(
-          "lastUpdated",
-          new Date().toLocaleTimeString(
-            config.language === "it" ? "it-IT" : "en-GB",
-            { hour: "2-digit", minute: "2-digit" }
-          )
-        );
-        updateElement("realTimePower", realKpi.realTimePower, " kW");
-        updateElement("dailyEnergy", realKpi.dailyEnergy, " kWh");
-        updateElement("monthEnergy", realKpi.monthEnergy, " kWh");
-        updateElement("yearEnergy", realKpi.yearEnergy, " kWh");
-        updateElement("co2Reduction", socialContribution.co2Reduction, " kg");
-        updateElement(
-          "treePlanting",
-          socialContribution.equivalentTreePlanting
-        );
-        updateElement(
-          "coalSavings",
-          socialContribution.standardCoalSavings,
-          " kg"
-        );
-
-        renderChart(powerCurve);
-      };
-
-      // Function to render the chart
-      const renderChart = (powerCurve) => {
-        if (powerCurveChart) powerCurveChart.destroy();
-        const ctx = document.getElementById("powerCurveChart").getContext("2d");
-        const chartData = powerCurve.activePower.map((v) =>
-          v === "-" || v === null ? null : parseFloat(v)
-        );
-        const isLightTheme = config.theme === "light";
-        const gridColor = isLightTheme
-          ? "rgba(0, 0, 0, 0.1)"
-          : "rgba(255, 255, 255, 0.1)";
-        const tickColor = isLightTheme ? "#6b7280" : "#9ca3af";
-
-        powerCurveChart = new Chart(ctx, {
-          type: "line",
-          data: {
-            labels: powerCurve.xAxis,
-            datasets: [
-              {
-                label: t("activePower"),
-                data: chartData,
-                borderColor: "#22c55e",
-                backgroundColor: "rgba(34, 197, 94, 0.2)",
-                borderWidth: 2,
-                pointRadius: 0,
-                tension: 0.4,
-                fill: true,
-              },
-            ],
+        // --- TRANSLATIONS ---
+        const translations = {
+          loading: {
+            en: "Loading data...",
+            it: "Caricamento dati in corso...",
           },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-              x: {
-                ticks: {
-                  color: tickColor,
-                  maxRotation: 0,
-                  autoSkip: true,
-                  maxTicksLimit: 12,
-                },
-                grid: { color: gridColor },
-              },
-              y: {
-                beginAtZero: true,
-                ticks: { color: tickColor },
-                grid: { color: gridColor },
-              },
-            },
-            plugins: {
-              legend: { display: false },
-              tooltip: {
-                backgroundColor: isLightTheme ? "#ffffff" : "#111827",
-                titleColor: isLightTheme ? "#111827" : "#ffffff",
-                bodyColor: isLightTheme ? "#374151" : "#d1d5db",
-                borderColor: isLightTheme ? "#e5e7eb" : "#374151",
-                borderWidth: 1,
-                padding: 10,
-                cornerRadius: 4,
-                displayColors: false,
-              },
-            },
+          welcomeTitle: { en: "Welcome to abfk", it: "Benvenuto in abfk" },
+          welcomeMessage: {
+            en: "To get started, please configure your API URL in the settings.",
+            it: "Per iniziare, configura il tuo URL API nelle impostazioni.",
           },
-        });
-      };
+          errorTitle: { en: "Connection Error", it: "Errore di Connessione" },
+          errorMessage: {
+            en: "Could not retrieve data from the plant.",
+            it: "Impossibile recuperare i dati dall'impianto.",
+          },
+          errorRetry: {
+            en: "A new attempt will be made shortly.",
+            it: "Verrà eseguito un nuovo tentativo a breve.",
+          },
+          openSettings: { en: "Open Settings", it: "Apri Impostazioni" },
+          settingsTitle: { en: "Settings", it: "Impostazioni" },
+          refreshInterval: {
+            en: "Refresh Interval (minutes)",
+            it: "Intervallo di Aggiornamento (minuti)",
+          },
+          theme: { en: "Theme", it: "Tema" },
+          textSize: { en: "Text Size", it: "Dimensione Testo" },
+          language: { en: "Language", it: "Lingua" },
+          close: { en: "Close", it: "Chiudi" },
+          save: { en: "Save and Reload", it: "Salva e Ricarica" },
+          connectionLost: {
+            en: "Connection lost. Retrying...",
+            it: "Connessione persa. Riprovo...",
+          },
+          lastUpdate: { en: "Last Update", it: "Ultimo Aggiornamento" },
+          realTimePower: { en: "Real-time Power", it: "Potenza Istantanea" },
+          dailyEnergy: { en: "Daily Production", it: "Produzione Giornaliera" },
+          monthlyEnergy: { en: "Monthly Production", it: "Produzione Mensile" },
+          yearlyEnergy: { en: "Yearly Production", it: "Produzione Annuale" },
+          totalYield: { en: "Total Yield", it: "Resa Totale" },
+          powerCurve: {
+            en: "Daily Power Curve",
+            it: "Curva di Potenza Giornaliera",
+          },
+          envContribution: {
+            en: "Environmental Contribution",
+            it: "Contributo Ambientale",
+          },
+          co2Reduction: { en: "CO₂ Reduction", it: "Riduzione CO₂" },
+          equivalentTrees: { en: "Equivalent Trees", it: "Alberi Equivalenti" },
+          coalSavings: { en: "Coal Savings", it: "Risparmio Carbone" },
+          activePower: { en: "Active Power (kW)", it: "Potenza Attiva (kW)" },
+        };
 
-      // Function to fetch data from the API
-      const fetchData = async () => {
-        // Show full-screen loader only on the first attempt
-        if (!hasLoadedOnce) {
-          statusOverlay.classList.remove("opacity-0", "pointer-events-none");
-          loadingIndicator.classList.remove("hidden");
-          errorMessage.classList.add("hidden");
-        }
+        // --- DOM ELEMENTS ---
+        const statusOverlay = document.getElementById("status-overlay");
+        const loadingIndicator = document.getElementById("loading-indicator");
+        const messageContainer = document.getElementById("message-container");
+        const welcomeIcon = document.getElementById("welcome-icon");
+        const errorIcon = document.getElementById("error-icon");
+        const messageTitle = document.getElementById("message-title");
+        const messageBody = document.getElementById("message-body");
+        const messageRetry = document.getElementById("message-retry");
+        const apiKeyCta = document.getElementById("api-key-cta");
+        const dashboardContent = document.getElementById("dashboard-content");
+        const subtleErrorEl = document.getElementById("subtle-error-message");
+        const settingsModal = document.getElementById("settings-modal");
+        const settingsForm = document.getElementById("settings-form");
+        const settingsButton = document.getElementById("settings-button");
+        let powerCurveChart = null;
+        let hasLoadedOnce = false;
+        let fetchInterval;
 
-        try {
-          const response = await fetch(config.apiUrl);
-          if (!response.ok) throw new Error(`HTTP Error: ${response.status}`);
-          const data = await response.json();
+        // --- FUNCTIONS ---
+        const t = (key) =>
+          translations[key]?.[config.language] ||
+          translations[key]?.["en"] ||
+          key;
 
-          // On success, update the UI
-          updateDashboardUI(data);
+        const applyStaticTranslations = () => {
+          document.title = "Dashboard Fotovoltaico - Kiosk";
+          Object.keys(translations).forEach((key) => {
+            const el = document.getElementById(
+              `label-${key.replace(/([A-Z])/g, "-$1").toLowerCase()}`
+            );
+            if (el) el.textContent = t(key);
+          });
+          document.getElementById("cta-open-settings").textContent =
+            t("openSettings");
+          document.getElementById("close-settings-button").textContent =
+            t("close");
+          document.getElementById("save-settings-button").textContent =
+            t("save");
+        };
 
-          // Hide subtle error message if it was visible
-          subtleErrorEl.classList.add("hidden");
+        const applyDynamicConfig = () => {
+          document.body.className = ""; // Clear previous classes
+          document.body.classList.add(config.theme);
+          document.documentElement.classList.remove(
+            "text-size-normal",
+            "text-size-large",
+            "text-size-xlarge"
+          );
+          document.documentElement.classList.add(
+            `text-size-${config.textSize}`
+          );
+          applyStaticTranslations();
+        };
 
-          // If this was the first successful load, hide the overlay and show the content
-          if (!hasLoadedOnce) {
-            statusOverlay.classList.add("opacity-0", "pointer-events-none");
-            dashboardContent.classList.remove("opacity-0");
-            hasLoadedOnce = true;
-          }
-        } catch (error) {
-          console.error("ERROR: Could not fetch data from the API.", error);
-          if (hasLoadedOnce) {
-            // If data was already loaded, show a subtle error
-            subtleErrorEl.textContent = t("connectionLost");
-            subtleErrorEl.classList.remove("hidden");
+        const loadConfig = (isHardCoded) => {
+          if (isHardCoded) {
+            config = { ...defaultConfig };
           } else {
-            // If it's the first load and it fails, show the full-screen error
-            loadingIndicator.classList.add("hidden");
-            errorMessage.classList.remove("hidden");
+            try {
+              const savedConfig = localStorage.getItem("abfkConfig");
+              config = {
+                ...defaultConfig,
+                ...(savedConfig ? JSON.parse(savedConfig) : {}),
+              };
+            } catch (e) {
+              console.error("Failed to load config from localStorage", e);
+              config = { ...defaultConfig };
+            }
           }
-        }
-      };
+        };
 
-      // Run on startup
-      document.addEventListener("DOMContentLoaded", () => {
-        applyStaticTranslations();
-        fetchData();
-        setInterval(fetchData, config.refreshIntervalMinutes * 60 * 1000);
-      });
-    </script>
+        const saveConfig = () => {
+          const newConfig = {
+            apiUrl: document.getElementById("apiUrl").value,
+            refreshIntervalMinutes: parseInt(
+              document.getElementById("refreshIntervalMinutes").value,
+              10
+            ),
+            theme: document.getElementById("theme").value,
+            textSize: document.getElementById("textSize").value,
+            language: document.getElementById("language").value,
+          };
+          localStorage.setItem("abfkConfig", JSON.stringify(newConfig));
+          return newConfig;
+        };
+
+        const openSettings = () => {
+          const savedConfig = localStorage.getItem("abfkConfig");
+          const formConfig = savedConfig
+            ? JSON.parse(savedConfig)
+            : defaultConfig;
+
+          document.getElementById("apiUrl").value = formConfig.apiUrl;
+          document.getElementById("refreshIntervalMinutes").value =
+            formConfig.refreshIntervalMinutes;
+          document.getElementById("theme").value = formConfig.theme;
+          document.getElementById("textSize").value = formConfig.textSize;
+          document.getElementById("language").value = formConfig.language;
+          settingsModal.classList.remove("hidden");
+          setTimeout(() => settingsModal.classList.remove("opacity-0"), 10);
+        };
+
+        const closeSettings = () => {
+          settingsModal.classList.add("opacity-0");
+          setTimeout(() => settingsModal.classList.add("hidden"), 300);
+        };
+
+        const updateElement = (id, value, unit = "") => {
+          const element = document.getElementById(id);
+          if (element) element.textContent = `${value}${unit}`;
+        };
+
+        const decodeHtmlEntities = (text) => {
+          const textarea = document.createElement("textarea");
+          textarea.innerHTML = text;
+          return textarea.value;
+        };
+
+        const updateDashboardUI = (apiResponse) => {
+          const decodedDataString = decodeHtmlEntities(apiResponse.data);
+          const parsedData = JSON.parse(decodedDataString);
+          const { realKpi, stationOverview, socialContribution, powerCurve } =
+            parsedData;
+
+          updateElement("stationName", stationOverview.stationName);
+          updateElement(
+            "stationAddress",
+            stationOverview.plantAddress.replace(/([A-Z][a-z])/g, " $1").trim()
+          );
+          updateElement(
+            "lastUpdated",
+            new Date().toLocaleTimeString(
+              config.language === "it" ? "it-IT" : "en-GB",
+              { hour: "2-digit", minute: "2-digit" }
+            )
+          );
+          updateElement("realTimePower", realKpi.realTimePower, " kW");
+          updateElement("dailyEnergy", realKpi.dailyEnergy, " kWh");
+          updateElement("monthEnergy", realKpi.monthEnergy, " kWh");
+          updateElement("yearEnergy", realKpi.yearEnergy, " kWh");
+          updateElement("totalYield", realKpi.cumulativeEnergy, " kWh");
+          updateElement("co2Reduction", socialContribution.co2Reduction, " kg");
+          updateElement(
+            "treePlanting",
+            socialContribution.equivalentTreePlanting
+          );
+          updateElement(
+            "coalSavings",
+            socialContribution.standardCoalSavings,
+            " kg"
+          );
+
+          renderChart(powerCurve);
+        };
+
+        const renderChart = (powerCurve) => {
+          if (powerCurveChart) powerCurveChart.destroy();
+          const ctx = document
+            .getElementById("powerCurveChart")
+            .getContext("2d");
+          const chartData = powerCurve.activePower.map((v) =>
+            v === "-" || v === null ? null : parseFloat(v)
+          );
+          const isLightTheme = config.theme === "light";
+          const gridColor = isLightTheme
+            ? "rgba(0, 0, 0, 0.1)"
+            : "rgba(255, 255, 255, 0.1)";
+          const tickColor = isLightTheme ? "#6b7280" : "#9ca3af";
+
+          powerCurveChart = new Chart(ctx, {
+            type: "line",
+            data: {
+              labels: powerCurve.xAxis,
+              datasets: [
+                {
+                  label: t("activePower"),
+                  data: chartData,
+                  borderColor: "#22c55e",
+                  backgroundColor: "rgba(34, 197, 94, 0.2)",
+                  borderWidth: 2,
+                  pointRadius: 0,
+                  tension: 0.4,
+                  fill: true,
+                },
+              ],
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              scales: {
+                x: {
+                  ticks: {
+                    color: tickColor,
+                    maxRotation: 0,
+                    autoSkip: true,
+                    maxTicksLimit: 12,
+                  },
+                  grid: { color: gridColor },
+                },
+                y: {
+                  beginAtZero: true,
+                  ticks: { color: tickColor },
+                  grid: { color: gridColor },
+                },
+              },
+              plugins: {
+                legend: { display: false },
+                tooltip: {
+                  backgroundColor: isLightTheme ? "#ffffff" : "#111827",
+                  titleColor: isLightTheme ? "#111827" : "#ffffff",
+                  bodyColor: isLightTheme ? "#374151" : "#d1d5db",
+                  borderColor: isLightTheme ? "#e5e7eb" : "#374151",
+                  borderWidth: 1,
+                  padding: 10,
+                  cornerRadius: 4,
+                  displayColors: false,
+                },
+              },
+            },
+          });
+        };
+
+        const showWelcomeScreen = () => {
+          statusOverlay.classList.remove("opacity-0", "pointer-events-none");
+          loadingIndicator.classList.add("hidden");
+          messageContainer.classList.remove("hidden");
+          welcomeIcon.classList.remove("hidden");
+          errorIcon.classList.add("hidden");
+          messageTitle.textContent = t("welcomeTitle");
+          messageTitle.classList.remove("text-red-500");
+          messageBody.textContent = t("welcomeMessage");
+          messageRetry.textContent = "";
+          apiKeyCta.classList.remove("hidden");
+        };
+
+        const showConnectionError = () => {
+          statusOverlay.classList.remove("opacity-0", "pointer-events-none");
+          loadingIndicator.classList.add("hidden");
+          messageContainer.classList.remove("hidden");
+          welcomeIcon.classList.add("hidden");
+          errorIcon.classList.remove("hidden");
+          messageTitle.textContent = t("errorTitle");
+          messageTitle.classList.add("text-red-500");
+          messageBody.textContent = t("errorMessage");
+          messageRetry.textContent = t("errorRetry");
+          apiKeyCta.classList.add("hidden");
+        };
+
+        const fetchData = async () => {
+          if (!hasLoadedOnce) {
+            statusOverlay.classList.remove("opacity-0", "pointer-events-none");
+            loadingIndicator.classList.remove("hidden");
+            messageContainer.classList.add("hidden");
+          }
+
+          try {
+            const response = await fetch(config.apiUrl);
+            if (!response.ok) throw new Error(`HTTP Error: ${response.status}`);
+            const data = await response.json();
+            updateDashboardUI(data);
+            subtleErrorEl.classList.add("hidden");
+            if (!hasLoadedOnce) {
+              statusOverlay.classList.add("opacity-0", "pointer-events-none");
+              dashboardContent.classList.remove("opacity-0");
+              hasLoadedOnce = true;
+            }
+          } catch (error) {
+            console.error("ERROR: Could not fetch data from the API.", error);
+            if (hasLoadedOnce) {
+              subtleErrorEl.textContent = t("connectionLost");
+              subtleErrorEl.classList.remove("hidden");
+            } else {
+              showConnectionError();
+            }
+          }
+        };
+
+        const generateIcon = (size) => {
+          const canvas = document.createElement("canvas");
+          canvas.width = size;
+          canvas.height = size;
+          const ctx = canvas.getContext("2d");
+          // Background
+          ctx.fillStyle = "#111827";
+          ctx.fillRect(0, 0, size, size);
+          // Sun circle
+          const centerX = size / 2;
+          const centerY = size / 2;
+          const radius = size * 0.3;
+          ctx.beginPath();
+          ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI, false);
+          ctx.fillStyle = "#FBBF24";
+          ctx.fill();
+          // Sun rays
+          ctx.strokeStyle = "#FBBF24";
+          ctx.lineWidth = size * 0.06;
+          ctx.lineCap = "round";
+          for (let i = 0; i < 8; i++) {
+            const angle = (i / 8) * 2 * Math.PI;
+            const startX = centerX + Math.cos(angle) * (radius * 1.2);
+            const endX = centerX + Math.cos(angle) * (radius * 1.6);
+            const startY = centerY + Math.sin(angle) * (radius * 1.2);
+            const endY = centerY + Math.sin(angle) * (radius * 1.6);
+            ctx.beginPath();
+            ctx.moveTo(startX, startY);
+            ctx.lineTo(endX, endY);
+            ctx.stroke();
+          }
+          return canvas.toDataURL("image/png");
+        };
+
+        const startApp = () => {
+          const isHardCoded =
+            defaultConfig.apiUrl && defaultConfig.apiUrl.includes("kk=");
+          loadConfig(isHardCoded);
+          applyDynamicConfig();
+
+          if (isHardCoded) {
+            settingsButton.classList.add("hidden");
+          } else {
+            document
+              .getElementById("settings-button")
+              .addEventListener("click", openSettings);
+            document
+              .getElementById("cta-open-settings")
+              .addEventListener("click", openSettings);
+            document
+              .getElementById("close-settings-button")
+              .addEventListener("click", closeSettings);
+            settingsForm.addEventListener("submit", (e) => {
+              e.preventDefault();
+              saveConfig();
+              closeSettings();
+              setTimeout(() => location.reload(), 300);
+            });
+          }
+
+          if (!config.apiUrl || !config.apiUrl.includes("kk=")) {
+            showWelcomeScreen();
+          } else {
+            fetchData();
+            if (fetchInterval) clearInterval(fetchInterval);
+            fetchInterval = setInterval(
+              fetchData,
+              config.refreshIntervalMinutes * 60 * 1000
+            );
+          }
+
+          // Set favicon dynamically
+          document
+            .querySelector("#favicon-link")
+            .setAttribute("href", generateIcon(32));
+        };
+
+        // --- INITIALIZATION ---
+        document.addEventListener("DOMContentLoaded", startApp);
+      </script>
+    </div>
   </body>
 </html>

@@ -1,4 +1,4 @@
-# abfk - A Better Fv Kiosk
+# abfk - A Better FV Kiosk
 
 A very simple, responsive, and modern alternative to the default FusionSolar kiosk dashboard.
 
@@ -19,30 +19,16 @@ Using this dashboard is as simple as it gets:
 
 ## ⚙️ Configuration
 
-All settings are located in a single `config` object at the beginning of the `<script>` tag inside the `index.html` file. Open the file with a text editor to modify them.
+To get the dashboard working, you only need to set your public API URL. Open the `index.html` file with a text editor and find the `config` object at the beginning of the `<script>` tag.
 
 ```javascript
 // --- DASHBOARD CONFIGURATION ---
 const config = {
-  apiUrl:
-    "https://corsproxy.io/?url=https://uni003eu5.fusionsolar.huawei.com/rest/pvms/web/kiosk/v1/station-kiosk-file?kk=YOUR_KIOSK_KEY",
-  refreshIntervalMinutes: 5,
-  theme: "dark",
-  textSize: "normal",
-  language: "en",
+  apiUrl: "YOUR_API_URL_GOES_HERE",
+  // ... other settings
 };
 // --- END OF CONFIGURATION ---
 ```
-
-### Configuration Parameters
-
-| Parameter                | Type     | Default    | Description                                                                                                                                                                                                               |
-| :----------------------- | :------- | :--------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `apiUrl`                 | `String` | `""`       | **(Required)** This is the most important setting. You must replace `YOUR_KIOSK_KEY` with the key from your own kiosk URL provided by FusionSolar. It's recommended to use a CORS proxy to avoid browser security issues. |
-| `refreshIntervalMinutes` | `Number` | `5`        | The interval in minutes at which the dashboard will automatically fetch new data from the API.                                                                                                                            |
-| `theme`                  | `String` | `'dark'`   | Sets the visual theme. Available options: `'dark'`, `'light'`.                                                                                                                                                            |
-| `textSize`               | `String` | `'normal'` | Adjusts the overall text size, useful for large displays viewed from a distance. Available options: `'normal'`, `'large'`, `'xlarge'`.                                                                                    |
-| `language`               | `String` | `'en'`     | Sets the display language for all labels on the dashboard. Available options: `'en'` (English), `'it'` (Italian).                                                                                                         |
 
 ### How to get your `apiUrl`
 
@@ -61,8 +47,8 @@ This final URL is what you need to paste into the `apiUrl` field in the configur
 
 ## 🤝 Contributing
 
-Contributions are welcome! If you have ideas for new features, improvements, or bug fixes, feel free to open an issue or submit a pull request.
+Contributions are welcome\! If you have ideas for new features, improvements, or bug fixes, feel free to open an issue or submit a pull request.
 
 ## 📄 License
 
-This project is open-source and available under the [MIT License](LICENSE).
+This project is open-source and available under the [MIT License](https://www.google.com/search?q=LICENSE).
