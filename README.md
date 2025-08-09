@@ -19,7 +19,7 @@ Using this dashboard is as simple as it gets:
 
 ## ⚙️ Configuration
 
-To get the dashboard working, you only need to set your public API URL. Open the `index.html` file with a text editor and find the `config` object at the beginning of the `<script>` tag.
+To get the dashboard working, you need to set your public API URL. For a pre-configured setup that requires no user interaction, you can edit the config object directly within the index.html file.
 
 ```javascript
 // --- DASHBOARD CONFIGURATION ---
