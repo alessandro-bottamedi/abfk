@@ -1,4 +1,4 @@
-# abfk - A Better FV Kiosk
+# abfk - A Better Fv Kiosk
 
 A very simple, responsive, and modern alternative to the default FusionSolar kiosk dashboard.
 
@@ -25,7 +25,7 @@ All settings are located in a single `config` object at the beginning of the `<s
 // --- DASHBOARD CONFIGURATION ---
 const config = {
   apiUrl:
-    "[https://corsproxy.io/?url=https://uni003eu5.fusionsolar.huawei.com/rest/pvms/web/kiosk/v1/station-kiosk-file?kk=YOUR_KIOSK_KEY](https://corsproxy.io/?url=https://uni003eu5.fusionsolar.huawei.com/rest/pvms/web/kiosk/v1/station-kiosk-file?kk=YOUR_KIOSK_KEY)",
+    "https://corsproxy.io/?url=https://uni003eu5.fusionsolar.huawei.com/rest/pvms/web/kiosk/v1/station-kiosk-file?kk=YOUR_KIOSK_KEY",
   refreshIntervalMinutes: 5,
   theme: "dark",
   textSize: "normal",
@@ -50,7 +50,7 @@ const config = {
 2.  Click on the **"Kiosk"** button on the main dashboard to access the kiosk view.
 3.  Enable Kiosk mode if it's not already active.
 4.  Copy the long URL from your browser's address bar. It will look something like this:
-    `https://uni003eu5.fusionsolar.huawei.com/pvmswebsite/nologin/assets/build/cloud.html#/kiosk?kk=43kEO9phgGeLEt469Oj2GjiHaBg3zmqw`
+    `https://uni003eu5.fusionsolar.huawei.com/pvmswebsite/nologin/assets/build/cloud.html#/kiosk?kk=XXXXXXXXXXXXXXXXX`
 5.  From that URL, extract only the first part (your public URL), for example: `https://uni003eu5.fusionsolar.huawei.com`
 6.  Now, construct the correct API endpoint by combining your public URL with the API path and your key (`kk=` parameter):
     `<your_public_url>/rest/pvms/web/kiosk/v1/station-kiosk-file?kk=XXXXXXXXXXXXXXXXX`
